@@ -1,0 +1,67 @@
+DWD Daily Climate Data — Header Reference
+==============================================
+
+Source
+------
+Official DWD Climate Data Center (CDC) daily climate observation data.
+
+The following fields occur in the downloaded daily station files used in
+the HeatRisk Deutschland project.
+
+Column       Meaning                                      Project use
+-----------  -------------------------------------------  -------------------------
+STATIONS_ID  DWD weather-station identifier              Station identification
+MESS_DATUM   Measurement date (YYYYMMDD)                  Time ordering / date
+QN_3         Quality/observation indicator                Not used as ML feature initially
+FX           Maximum wind speed / peak gust               Candidate feature
+FM           Mean wind speed                              Candidate feature
+QN_4         Quality/observation indicator                Not used as ML feature initially
+RSK          Daily precipitation amount                   Candidate feature
+RSKF         Precipitation measurement/status indicator   Not used as ML feature initially
+SDK          Daily sunshine duration                      Candidate feature
+SHK_TAG      Snow-related daily measurement               Probably not useful for heat risk
+NM           Mean cloudiness / cloud amount               Candidate feature
+VPM          Mean vapor pressure                         Candidate feature
+PM           Mean air pressure                            Candidate feature
+TMK          Mean daily air temperature                   Candidate feature
+UPM          Mean relative humidity                       Candidate feature
+TXK          Maximum daily air temperature                CRITICAL: target basis
+TNK          Minimum daily air temperature                Candidate feature
+TGK          Daily minimum temperature near ground        Candidate feature
+eor          End-of-record marker                         Not a feature
+
+HeatRisk target
+---------------
+A heat day is defined as:
+
+    TXK >= 30°C
+
+The project predicts whether the FOLLOWING day is a heat day.
+
+Therefore, for a day t:
+
+    Features: information available on or before day t
+    Target:   heat-day status of day t+1
+
+Leakage rule
+------------
+No feature may use information from the future relative to the prediction
+time. In particular, tomorrow's TXK must never be used to predict tomorrow's
+heat-day status.
+
+Initial feature candidates
+---------------------------
+TMK, TXK, TNK, UPM, SDK, RSK, NM, VPM, PM, FX, and FM.
+
+The actual feature set will be decided after inspecting the downloaded data,
+including missing values, date coverage, duplicates, and data quality.
+
+Notes
+-----
+- STATIONS_ID and MESS_DATUM are important for identifying and ordering the
+  observations, but are not ordinary weather predictor variables.
+- QN_3, QN_4, RSKF, and eor are not intended as initial ML features.
+- Raw DWD files should remain unchanged. Cleaning and feature engineering
+  should be performed in the Python pipeline.
+- Exact units and DWD field definitions should be verified from the relevant
+  DWD documentation before finalizing the data dictionary.
