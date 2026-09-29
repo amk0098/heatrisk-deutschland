@@ -33,19 +33,34 @@ def load_station_data(file_path:Path)->pd.DataFrame:
     df = df[keep_columns]
     return df
 
-if __name__ == "__main__":
-    data_dir = Path("data/raw")
 
+
+def load_all_stations(data_dir: Path) -> pd.DataFrame:
     files = sorted(data_dir.glob("*.txt"))
 
-    print(f"Found {len(files)} files.\n")
+    dataframes = []
 
     for file_path in files:
         df = load_station_data(file_path)
+        dataframes.append(df)
 
-        print(f"{df['city'].iloc[0]}:")
-        print(f"  Rows: {len(df)}")
-        print(f"  Date range: {df['MESS_DATUM'].min()} -> {df['MESS_DATUM'].max()}")
-        print(f"  Columns: {df.columns.tolist()}")
-        print()
+    df = pd.concat(dataframes, ignore_index=True)
 
+    df = df.sort_values(["city", "MESS_DATUM"]).reset_index(drop=True)
+
+    return df
+
+if __name__ == "__main__":
+    data_dir = Path("data/raw")
+
+    df = load_all_stations(data_dir)
+
+    print(df.head())
+    print("\nRows:", len(df))
+    print("\nColumns:", df.columns.tolist())
+    print("\nCities:")
+    print(df["city"].value_counts())
+    print("\nFirst 10 rows:")
+    print(df.head(10))
+    print("\nLast 10 rows:")
+    print(df.tail(10))  
