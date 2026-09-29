@@ -37,7 +37,7 @@ for file in files:
     print(df[keep_columns].head())
     print("\nCandidate missing values:")
     print(df[keep_columns].isna().sum())
-    """print("\nTemperature summary:")
+    print("\nTemperature summary:")
     print(df[["TMK", "TXK", "TNK"]].describe())
     print("\nRaw column names:")
     print(df.columns.tolist())
@@ -63,4 +63,4 @@ for file in files:
     print(df["MESS_DATUM"].duplicated().sum())
 
     print("\nData types:")
-    print(df.dtypes)"""
+    print(df.dtypes)
