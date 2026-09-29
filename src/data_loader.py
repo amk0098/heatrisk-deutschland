@@ -85,3 +85,8 @@ if __name__ == "__main__":
 
     print("\nTarget counts:")
     print(df["heat_day_next"].value_counts())
+    print("\nMissing values:")
+    print(df.isna().sum())
+    print("\nRows with missing feature values:")
+    print(
+    df[df[["TMK", "TXK", "TNK", "VPM", "UPM"]].isna().any(axis=1)])
