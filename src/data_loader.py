@@ -50,17 +50,38 @@ def load_all_stations(data_dir: Path) -> pd.DataFrame:
 
     return df
 
+def add_target(df: pd.DataFrame) -> pd.DataFrame:
+    next_txk = df.groupby("city")["TXK"].shift(-1)
+
+    df["heat_day_next"] = (next_txk >= 30.0).astype("Int64")
+
+    df.loc[next_txk.isna(), "heat_day_next"] = pd.NA
+
+    return df
+
+
+
+def remove_missing_targets(df: pd.DataFrame) -> pd.DataFrame:
+    df = df.dropna(subset=["heat_day_next"]).copy()
+
+    df["heat_day_next"] = df["heat_day_next"].astype(int)
+
+    return df
+
 if __name__ == "__main__":
     data_dir = Path("data/raw")
 
     df = load_all_stations(data_dir)
+    df = add_target(df)
+    df = remove_missing_targets(df)
 
     print(df.head())
-    print("\nRows:", len(df))
-    print("\nColumns:", df.columns.tolist())
-    print("\nCities:")
-    print(df["city"].value_counts())
-    print("\nFirst 10 rows:")
-    print(df.head(10))
-    print("\nLast 10 rows:")
-    print(df.tail(10))  
+
+    print("\nColumns:")
+    print(df.columns.tolist())
+
+    print("\nShape:")
+    print(df.shape)
+
+    print("\nTarget counts:")
+    print(df["heat_day_next"].value_counts())
