@@ -87,3 +87,29 @@ if __name__ == "__main__":
     print(features.head())
     print("\nShape:")
     print(features.shape)
+    print("\nDate range:")
+    print(df["MESS_DATUM"].min())
+    print(df["MESS_DATUM"].max())
+
+    print("\nRows by period:")
+
+    train = df[df["MESS_DATUM"] <= "2020-12-31"]
+    validation = df[
+    (df["MESS_DATUM"] >= "2021-01-01")
+    & (df["MESS_DATUM"] <= "2023-12-31")
+        ]
+    test = df[df["MESS_DATUM"] >= "2024-01-01"]
+
+    print("Train:", train.shape)
+    print("Validation:", validation.shape)
+    print("Test:", test.shape)
+
+
+    print("\nHeat days by period:")
+    print("Train:", train["heat_day_next"].sum())
+    print("Validation:", validation["heat_day_next"].sum())
+    print("Test:", test["heat_day_next"].sum())
+    print("\nHeat-day rate by period:")
+    print("Train:", train["heat_day_next"].mean())
+    print("Validation:", validation["heat_day_next"].mean())
+    print("Test:", test["heat_day_next"].mean())
