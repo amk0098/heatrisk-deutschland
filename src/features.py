@@ -21,20 +21,17 @@ def add_lag_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def select_features(df: pd.DataFrame) -> pd.DataFrame:
-    df = df.copy()
-
-    feature_columns = [
-        "TMK",
-        "TXK",
-        "TNK",
-        "VPM",
-        "UPM",
+def remove_missing_features(df: pd.DataFrame) -> pd.DataFrame:
+    required_history_features = [
         "TXK_lag_1",
         "TXK_rolling_3",
     ]
 
-    return df[feature_columns]
+    df = df.dropna(
+        subset=required_history_features
+    ).copy()
+
+    return df
 
 
 def remove_missing_features(df: pd.DataFrame) -> pd.DataFrame:
@@ -69,7 +66,7 @@ if __name__ == "__main__":
 
     df = add_lag_features(df)
     df = remove_missing_features(df)
-    features = select_features(df)
+    features = remove_missing_features(df)
     print(
     df[
         ["MESS_DATUM","city","TXK","TXK_lag_1","TXK_rolling_3","heat_day_next",]].head(10))
