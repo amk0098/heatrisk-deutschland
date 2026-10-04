@@ -1,6 +1,6 @@
 ,accuracy,precision,recall,f1,balanced_accuracy,average_precision
-Always negative,0.9627,0.0,0.0,0.0,0.5,0.0373
-Persistence,0.9564,0.4148,0.4148,0.4148,0.6961,0.1939
-Seasonal,0.7792,0.1358,0.9185,0.2366,0.8462,0.1278
-Logistic Regression,0.8949,0.256,0.9556,0.4038,0.924,0.4142
-Random Forest,0.9553,0.4293,0.6074,0.5031,0.7881,0.4256
+Always negative,0.963,0.0,0.0,0.0,0.5,0.037
+Persistence,0.9567,0.4148,0.4148,0.4148,0.6962,0.1937
+Seasonal,0.7789,0.1348,0.9185,0.2351,0.846,0.1268
+Logistic Regression,0.8937,0.2524,0.9556,0.3994,0.9234,0.4113
+Random Forest,0.9556,0.4293,0.6074,0.5031,0.7882,0.4277

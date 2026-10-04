@@ -34,22 +34,6 @@ def remove_missing_features(df: pd.DataFrame) -> pd.DataFrame:
     return df
 
 
-def remove_missing_features(df: pd.DataFrame) -> pd.DataFrame:
-    feature_columns = [
-        "TMK",
-        "TXK",
-        "TNK",
-        "VPM",
-        "UPM",
-        "TXK_lag_1",
-        "TXK_rolling_3",
-    ]
-
-    df = df.dropna(subset=feature_columns).copy()
-
-    return df
-
-
 if __name__ == "__main__":
     from pathlib import Path
     from src.data_loader import (
