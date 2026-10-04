@@ -13,6 +13,8 @@ from sklearn.metrics import (
     average_precision_score,
     confusion_matrix,
 )
+from sklearn.ensemble import RandomForestClassifier
+
 
 
 
@@ -43,6 +45,31 @@ def create_logistic_regression() -> Pipeline:
 
 
 
+
+
+
+def create_random_forest() -> Pipeline:
+    model = Pipeline([
+        (
+            "imputer",
+            SimpleImputer(strategy="mean"),
+        ),
+        (
+            "classifier",
+            RandomForestClassifier(
+                n_estimators=300,
+                class_weight="balanced",
+                random_state=42,
+                n_jobs=-1,
+            ),
+        ),
+    ])
+
+    return model
+
+
+
+
 def train_logistic_regression(X_train: pd.DataFrame,y_train: pd.Series,) -> Pipeline:
 
     model = create_logistic_regression()
@@ -55,6 +82,22 @@ def train_logistic_regression(X_train: pd.DataFrame,y_train: pd.Series,) -> Pipe
 
 
 
+
+def train_random_forest(
+    X_train: pd.DataFrame,
+    y_train: pd.Series,
+) -> Pipeline:
+
+    model = create_random_forest()
+
+    model.fit(X_train, y_train)
+
+    return model
+
+
+
+
+#come back to it
 def evaluate_thresholds(
     y_true: pd.Series,
     probabilities,
@@ -137,97 +180,97 @@ if __name__ == "__main__":
     X_validation, y_validation = split_features_target(validation)
     X_test, y_test = split_features_target(test)
 
-    model = train_logistic_regression(X_train, y_train)
+    model = train_random_forest(X_train, y_train)
 
-    validation_probabilities = model.predict_proba(
-        X_validation
-    )[:, 1]
+validation_probabilities = model.predict_proba(
+    X_validation
+)[:, 1]
 
-    thresholds = [
-        0.20,
-        0.25,
-        0.30,
-        0.35,
-        0.40,
-        0.45,
-        0.50,
-    ]
+thresholds = [
+    0.20,
+    0.25,
+    0.30,
+    0.35,
+    0.40,
+    0.45,
+    0.50,
+]
 
-    threshold_results = evaluate_thresholds(
-        y_validation,
-        validation_probabilities,
-        thresholds,
-    )
+threshold_results = evaluate_thresholds(
+    y_validation,
+    validation_probabilities,
+    thresholds,
+)
 
-    print("\nValidation threshold results:")
-    print(threshold_results)
+print("\nRandom Forest validation threshold results:")
+print(threshold_results)
 
-    selected_threshold = (
-        threshold_results
-        .sort_values("f1", ascending=False)
-        .iloc[0]["threshold"]
-    )
+selected_threshold = (
+    threshold_results
+    .sort_values("f1", ascending=False)
+    .iloc[0]["threshold"]
+)
 
-    print("\nSelected threshold:", selected_threshold)
+print("\nSelected threshold:", selected_threshold)
 
-    test_probabilities = model.predict_proba(
-        X_test
-    )[:, 1]
+test_probabilities = model.predict_proba(
+    X_test
+)[:, 1]
 
-    test_predictions = predict_with_threshold(
+test_predictions = predict_with_threshold(
+    test_probabilities,
+    selected_threshold,
+)
+
+print("\nFinal Random Forest test metrics:")
+
+print(
+    "Accuracy:",
+    accuracy_score(y_test, test_predictions),
+)
+
+print(
+    "Precision:",
+    precision_score(
+        y_test,
+        test_predictions,
+        zero_division=0,
+    ),
+)
+
+print(
+    "Recall:",
+    recall_score(
+        y_test,
+        test_predictions,
+        zero_division=0,
+    ),
+)
+
+print(
+    "F1:",
+    f1_score(
+        y_test,
+        test_predictions,
+        zero_division=0,
+    ),
+)
+
+print(
+    "Balanced accuracy:",
+    balanced_accuracy_score(
+        y_test,
+        test_predictions,
+    ),
+)
+
+print(
+    "Average precision:",
+    average_precision_score(
+        y_test,
         test_probabilities,
-        selected_threshold,
-    )
+    ),
+)
 
-    print("\nFinal Logistic Regression test metrics:")
-
-    print(
-        "Accuracy:",
-        accuracy_score(y_test, test_predictions),
-    )
-
-    print(
-        "Precision:",
-        precision_score(
-            y_test,
-            test_predictions,
-            zero_division=0,
-        ),
-    )
-
-    print(
-        "Recall:",
-        recall_score(
-            y_test,
-            test_predictions,
-            zero_division=0,
-        ),
-    )
-
-    print(
-        "F1:",
-        f1_score(
-            y_test,
-            test_predictions,
-            zero_division=0,
-        ),
-    )
-
-    print(
-        "Balanced accuracy:",
-        balanced_accuracy_score(
-            y_test,
-            test_predictions,
-        ),
-    )
-
-    print(
-        "Average precision:",
-        average_precision_score(
-            y_test,
-            test_probabilities,
-        ),
-    )
-
-    print("\nConfusion matrix:")
-    print(confusion_matrix(y_test, test_predictions))
+print("\nConfusion matrix:")
+print(confusion_matrix(y_test, test_predictions))
